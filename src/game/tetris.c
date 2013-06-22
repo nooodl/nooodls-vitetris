@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 #include "tetris.h"
@@ -753,11 +754,35 @@ void setupplayer(struct player *p)
 	while (p->level < p->startlevel)
 		levelup(p);
 	p->lines = (game->mode & MODE_BTYPE) ? p->lineslimit : 0;
+	memset(p->bag, 0, 7);
+}
+
+static int random_piece() {
+	int i, n = 0;
+	int choices[7];
+
+	/* Count unused pieces */
+	for (i = 0; i < 7; i++) {
+		if (!player1.bag[i]) {
+			choices[n++] = i;
+		}
+	}
+
+	/* If none left, fill the bag and take any piece */
+	if (n == 0) {
+		memset(player1.bag, 0, 7);
+		i = randnum(7);
+	} else {
+		i = choices[randnum(n)];
+	}
+
+	player1.bag[i] = 1;
+	return i;
 }
 
 static int nextpiece(struct tetr *next)
 {
-	int i = randnum(7);
+	int i = random_piece();
 	player1.piece = *next;
 	gettetrom(next, i);
 	tetr_stats[i]++;
@@ -768,7 +793,7 @@ static int nextpiece(struct tetr *next)
 int startgame_1p()
 {
 	struct tetr next;
-	int i = randnum(7);
+	int i = random_piece();
 	int t;
 	drawgamescreen_1p();
 	gettetrom(&next, i);

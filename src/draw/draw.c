@@ -250,30 +250,6 @@ static void print_top_scores()
 	refreshwin(WIN_TOP_SCORES);
 }
 
-static void print_tetr_stats()
-{
-	const char letters[8] = "IJLOSTZ";
-	int sum = 0;
-	int i;
-	if (term_width < 45)
-		return;
-	setwcurs(WIN_TETROM_STATS, 1, 0);
-	for (i = 0; i < 7; i++) {
-		setblockcolor(tetrom_colors[i]);
-		putch(block_chars[0]);
-		putch(letters[i]);
-		putch(block_chars[1]);
-		setattr_normal();
-		printint(" %03d", tetr_stats[i]);
-		newln(1);
-		sum += tetr_stats[i];
-	}
-	printstr("  -----");
-	newln(0);
-	printint("Sum %04d", sum);
-	refreshwin(WIN_TETROM_STATS);
-}
-
 void drawgamescreen_1p()
 {
 	drawboard(1);
@@ -284,7 +260,6 @@ void drawgamescreen_1p()
 		redrawboard(&player1, 19);
 	drawpanel_1p();
 	print_top_scores();
-	print_tetr_stats();
 	refreshwin(WIN_PANEL);
 }
 
@@ -436,7 +411,6 @@ void upd_stat(const struct player *p, int levelup)
 		else
 			printstat_1p();
 		print_top_scores();
-		print_tetr_stats();
 	}
 	refreshwin(WIN_PANEL);
 }

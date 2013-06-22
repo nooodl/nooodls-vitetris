@@ -61,6 +61,7 @@ struct player {
 	short lines;
 	short mvleft_tm;
 	short mvright_tm;
+	char bag[7];
 };
 
 /* game modes */
