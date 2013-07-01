@@ -755,6 +755,8 @@ void setupplayer(struct player *p)
 		levelup(p);
 	p->lines = (game->mode & MODE_BTYPE) ? p->lineslimit : 0;
 	memset(p->bag, 0, 7);
+    p->start_time = get_clock();
+    p->current_time = p->start_time;
 }
 
 static int random_piece() {
@@ -876,6 +878,7 @@ static int processinput(int tm, int flags)
 	int d = 0;
 	int ret;
 	upd_screen(1);
+    upd_stat(&player1, 0);
 	while (d < tm) {
 		ret = -1;
 		if (key = getkeypress(tm-d, IN_GAME | SINGLE_PL)) {

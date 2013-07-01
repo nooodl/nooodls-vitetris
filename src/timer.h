@@ -8,5 +8,8 @@ void timer_end();
 /* get time in milliseconds >= tm */
 int gettm(int tm);
 
+/* get absolute time in milliseconds */
+int get_clock();
+
 /* sleep ms milliseconds */
 void sleep_msec(unsigned ms);

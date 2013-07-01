@@ -31,7 +31,7 @@ static void initplayer(struct player *p)
 {
 	p->startlevel = 0;
 	p->height = 0;
-	p->lineslimit = 25;
+	p->lineslimit = 40;
 	p->rotationsys = ROT_CLOCKWISE | ROT_LEFTHAND;
 	p->score = 0;
 }

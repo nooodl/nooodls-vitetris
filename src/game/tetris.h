@@ -62,6 +62,8 @@ struct player {
 	short mvleft_tm;
 	short mvright_tm;
 	char bag[7];
+    int start_time;
+    int current_time;
 };
 
 /* game modes */

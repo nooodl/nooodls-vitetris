@@ -71,6 +71,35 @@ int gettm(int a)
 	return b;
 }
 
+int get_clock()
+{
+	int b;
+#if UNIX
+	struct timeval tmv;
+	gettimeofday(&tmv, NULL);
+	b = 1000*(tmv.tv_sec) + tmv.tv_usec/1000;
+#elif WIN32
+	long ms = timeGetTime();
+	b = ms;
+#elif PCTIMER
+	unsigned long ms = pctimer_time(0, pctimer_get_ticks());
+	b = ms;
+#elif ALLEGRO
+	if (!elapsed_tm) {
+		elapsed_tm = 1;
+		install_int(inc_tm, 1);
+	}
+	b = elapsed_tm;
+#elif UCLOCKS_PER_SEC
+	uclock_t ms = uclock() / (UCLOCKS_PER_SEC/1000);
+	b = ms;
+#else
+	clock_t hs = clock() / (CLOCKS_PER_SEC/100.0);
+	b = 10*(hs);
+#endif
+	return b;
+}
+
 void sleep_msec(unsigned ms)
 {
 #if UNIX

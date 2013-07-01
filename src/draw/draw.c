@@ -6,6 +6,7 @@
 #include "internal.h"
 #include "../textgfx/textgfx.h"
 #include "../hiscore.h"
+#include "../timer.h"
 #include "../netw/sock.h" /* opponent_name */
 
 char tetrom_colors[7] = {
@@ -23,7 +24,7 @@ void drawbl(int bl, int clr, int x, int y)
 	int c, i;
 	setblockcolor(clr%10);
 	i = clr<10 || textgfx_flags & (TT_BLOCKS | TT_BLOCKS_BG |
-				       BLACK_BRACKETS);
+					BLACK_BRACKETS);
 	c = block_chars[i];
 	while (bl) {
 		setcurs(x, y);
@@ -134,13 +135,26 @@ void drawpanel_labels(const char *first, int x)
 	}
 }
 
+int format_time(char *str, int time) {
+	return snprintf(str, 9, "%02d:%02d.%02d",
+					time / 60000,
+					time / 1000 % 60,
+					time / 10 % 100);
+}
+
 static void printstat_1p()
 {
+	char timer[9];
 	setattr_normal();
 	if (!_WHITE_BG)
 		setattr_bold();
 	setcurs(1, 2);
-	printlong(" %06ld ", player1.score % 1000000);
+	if (game->mode & MODE_BTYPE) {
+		format_time(timer, get_clock() - player1.start_time);
+		printstr(timer);
+	} else {
+		printlong(" %06ld ", player1.score % 1000000);
+	}
 	setcurs(3, 6);
 	printint(" %02d ", player1.level);
 	setcurs(3, 10);
@@ -173,6 +187,7 @@ static void drawpanel_1p()
 	int h24 = _HEIGHT_24L;
 	int clr = (player1.level % 6)+1;
 	int i;
+	char *top_label = (game->mode & MODE_BTYPE) ? " Time" : "Score";
 	setwcurs(WIN_PANEL, 0, 0);
 	setblockcolor(clr);
 	printstr_acs("lqNu", 8);
@@ -181,11 +196,11 @@ static void drawpanel_1p()
 	if (h24) {
 		setcurs(0, 12);
 		putch(LOWLEFT);
-		drawpanel_labels("Score", 1);
+		drawpanel_labels(top_label, 1);
 	} else {
 		setcurs(0, 13);
 		printstr_acs("xhNx", 8);
-		drawpanel_labels("Score", 1);
+		drawpanel_labels(top_label, 1);
 		setcurs(2, 13);
 		printstr(" Next ");
 	}
@@ -423,7 +438,7 @@ static void upddropmark(int pl, int a, int b, int c, int d)
 	int clr = BOARD_FRAME_COLOR;
 #endif
 	if (term_height==20 || term_height==24 ||
-	    pl==2 && game->mode & MODE_NETWORK)
+		pl==2 && game->mode & MODE_NETWORK)
 		return;
 	if (game_running)
 		refreshwin(pl);
